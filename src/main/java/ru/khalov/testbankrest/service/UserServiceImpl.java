@@ -1,0 +1,92 @@
+package ru.khalov.testbankrest.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import ru.khalov.testbankrest.dto.UserDto;
+import ru.khalov.testbankrest.entity.Card;
+import ru.khalov.testbankrest.entity.User;
+import ru.khalov.testbankrest.exception.UserNotCreatedException;
+import ru.khalov.testbankrest.repository.CardRepository;
+import ru.khalov.testbankrest.repository.UserRepository;
+import ru.khalov.testbankrest.util.Role;
+
+import java.util.List;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserServiceImpl implements UserDetailsService {
+
+    private final UserRepository userRepository;
+    private final CardRepository cardRepository;
+
+    @Override
+    public @NonNull UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException{
+        log.info("Called method: 'loadUserByUsername' from UserServiceImpl, username = {}", username);
+        return userRepository.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("User with username: "  + username + ", not found"));
+    }
+
+    public String saveUser(UserDto userDto) {
+        log.info("Called method: 'saveUser' from UserServiceImpl");
+
+        User userEntity = new User();
+        userEntity.setPassword(userDto.password());
+        userEntity.setName(userDto.name());
+        userEntity.setSurname(userDto.surname());
+        userEntity.setEmail(userDto.email());
+        userEntity.setRoles(Set.of(Role.USER));
+
+        log.info("User created successfully");
+
+        try{
+            log.info("Start save user in db");
+            userRepository.saveAndFlush(userEntity);
+            return "User save successfully!";
+        } catch (Exception e){
+            log.error("Error to save in db: {}", e.getMessage());
+            throw new UserNotCreatedException("User dont created");
+        }
+    }
+
+
+    public String deleteUser(UserDto userDto){
+        log.info("Called method: 'deleteUser' from UserServiceImpl");
+        User user = userRepository.findByUsername(userDto.username()).orElseThrow(() ->
+                new UsernameNotFoundException("User with username: "  + userDto.username() + ", not found"));
+
+        userRepository.deleteByUsername(userDto.username());
+        return "User delete successfully";
+    }
+
+    public String updateUser(UserDto userDto){
+        log.info("Called method: 'updateUser' from UserServiceImpl");
+        User user = userRepository.findByUsername(userDto.username()).orElseThrow(() ->
+                new UsernameNotFoundException("User with username: "  + userDto.username() + ", not found"));
+        try {
+            log.info("start update user");
+
+            user.setName(userDto.name());
+            user.setSurname(userDto.surname());
+            user.setEmail(userDto.email());
+
+            if(userDto.cardIds() != null) {
+                List<Card> cards = cardRepository.findAllById(userDto.cardIds());
+                user.setCards(cards);
+            }
+
+            log.info("user update successfully");
+            return "User update successfully";
+        } catch (Exception e){
+            log.error("Error to update user: {}", e.getMessage());
+            return "Error to update user!";
+        }
+    }
+
+}
