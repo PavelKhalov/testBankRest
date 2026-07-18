@@ -2,9 +2,7 @@ package ru.khalov.testbankrest.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,6 +18,8 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 @Setter
 public class User implements UserDetails {
@@ -28,13 +28,13 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true, length = 30)
     private String username;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "surname", nullable = false)
+    @Column(name = "surname", nullable = false, length = 30)
     private String surname;
 
     @Email
@@ -46,30 +46,17 @@ public class User implements UserDetails {
 
     private boolean enabled = true;
 
-    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    @Column(name = "role", nullable = false, length = 10)
+    private Role role;
 
     private Collection<? extends GrantedAuthority> grantedAuthorities(){
-        if(roles == null){
-            return Set.of();
-        }
-
-        return roles.stream().map(role ->
-                    new SimpleGrantedAuthority("ROLE_"+role.name()))
-                .collect(Collectors.toSet());
-
+        return List.of(new SimpleGrantedAuthority("ROLE_"+ role.name()));
     }
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Card> cards;
-
-    public User(String name, String surname, String email){
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -93,7 +80,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return enabled;
     }
 
     @Override
@@ -103,6 +90,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return enabled;
     }
 }
