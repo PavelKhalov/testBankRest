@@ -9,6 +9,8 @@ import java.time.Instant;
 @Entity
 @Table(name = "cards")
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 @Setter
 public class Card {
@@ -21,7 +23,10 @@ public class Card {
     @Column(name = "number", nullable = false, unique = true)
     private String number;
 
-    @Column(name = "balance", nullable = false)
+    @Column(name = "last_four_digits", nullable = false, length = 4)
+    private String lastFourDigits;
+
+    @Column(name = "balance", nullable = false, precision = 9, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,12 +35,6 @@ public class Card {
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
-
-    public Card (String number, BigDecimal balance, User owner) {
-        this.number = number;
-        this.balance = balance;
-        this.owner = owner;
-    }
 
     @PrePersist
     public void prePersist(){
