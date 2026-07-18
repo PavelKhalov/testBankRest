@@ -1,12 +1,12 @@
 package ru.khalov.testbankrest.service;
 
+import jdk.jfr.StackTrace;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.khalov.testbankrest.dto.UserDto;
 import ru.khalov.testbankrest.entity.Card;
 import ru.khalov.testbankrest.entity.User;
@@ -21,23 +21,18 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public @NonNull UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException{
-        log.info("Called method: 'loadUserByUsername' from UserServiceImpl, username = {}", username);
-        return userRepository.findByUsername(username).orElseThrow(() ->
-                new UsernameNotFoundException("User with username: "  + username + ", not found"));
-    }
-
+    @Transactional
     public String saveUser(UserDto userDto) {
-        log.info("Called method: 'saveUser' from UserServiceImpl");
+        log.info("Called method: 'saveUser' from UserService");
 
         User userEntity = new User();
-        userEntity.setPassword(userDto.password());
+        userEntity.setPassword(passwordEncoder.encode(userDto.password()));
         userEntity.setName(userDto.name());
         userEntity.setSurname(userDto.surname());
         userEntity.setEmail(userDto.email());
@@ -55,7 +50,7 @@ public class UserServiceImpl implements UserDetailsService {
         }
     }
 
-
+    @Transactional
     public String deleteUser(UserDto userDto){
         log.info("Called method: 'deleteUser' from UserServiceImpl");
         User user = userRepository.findByUsername(userDto.username()).orElseThrow(() ->
@@ -65,8 +60,9 @@ public class UserServiceImpl implements UserDetailsService {
         return "User delete successfully";
     }
 
+    @Transactional
     public String updateUser(UserDto userDto){
-        log.info("Called method: 'updateUser' from UserServiceImpl");
+        log.info("Called method: 'updateUser' from UserService");
         User user = userRepository.findByUsername(userDto.username()).orElseThrow(() ->
                 new UsernameNotFoundException("User with username: "  + userDto.username() + ", not found"));
         try {
