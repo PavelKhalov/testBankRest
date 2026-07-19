@@ -32,7 +32,7 @@ class TransferServiceTest {
     void transferTest() {
         TransferRequest request = new TransferRequest(1L, 1L, BigDecimal.ONE, null);
 
-        assertThrows(SameCardTransferException.class, () -> transferService.transfer(request));
+        assertThrows(SameCardTransferException.class, () -> transferService.transfer("john",request));
     }
 
     @Test
@@ -47,6 +47,6 @@ class TransferServiceTest {
 
         TransferRequest request = new TransferRequest(1L, 2L, BigDecimal.ONE, null);
 
-        assertThrows(CardOwnershipException.class, () -> transferService.transfer(request));
+        assertThrows(CardOwnershipException.class, () -> transferService.transfer("john", request));
     }
 }
