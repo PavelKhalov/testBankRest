@@ -1,6 +1,5 @@
 package ru.khalov.testbankrest.dto.response;
 
-import org.springframework.cglib.core.Local;
 import ru.khalov.testbankrest.util.CardStatus;
 
 import java.math.BigDecimal;

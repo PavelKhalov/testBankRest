@@ -6,6 +6,11 @@ spring:
     url:
     username: postgres
     driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
 
 jwt:
   secretKey: ${JWT_SECRET}

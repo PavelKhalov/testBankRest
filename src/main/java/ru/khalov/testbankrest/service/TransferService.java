@@ -39,7 +39,7 @@ public class TransferService {
             fromCard = lockCard(id1);
         }
 
-        if(!fromCard.getOwner().getUsername().equals(toCard.getOwner()))
+        if(!fromCard.getOwner().getUsername().equals(toCard.getOwner().getUsername()))
             throw new CardOwnershipException("It's not your card");
 
 
