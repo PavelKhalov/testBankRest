@@ -21,7 +21,7 @@ public class TransferService {
     private final CardRepository cardRepository;
 
     @Transactional()
-    public String transfer(TransferRequest request){
+    public String transfer(String username, TransferRequest request){
         Long id1 = request.fromCardId();
         Long id2 = request.toCardId();
 
@@ -39,7 +39,7 @@ public class TransferService {
             fromCard = lockCard(id1);
         }
 
-        if(!fromCard.getOwner().getUsername().equals(toCard.getOwner().getUsername()))
+        if (!fromCard.getOwner().getUsername().equals(username))
             throw new CardOwnershipException("It's not your card");
 
 

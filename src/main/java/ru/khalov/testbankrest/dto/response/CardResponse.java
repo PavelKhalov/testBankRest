@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record CardResponse(
-        UUID ownerId,
         String maskCardNumber,
         String ownerUsername,
         String ownerName,

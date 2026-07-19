@@ -10,7 +10,6 @@ public class CardMapper {
 
     public CardResponse toResponse(Card card){
         return new CardResponse(
-                card.getOwner().getId(),
                 CardNumberMasker.mask(card.getLastFourDigits()),
                 card.getOwner().getUsername(),
                 card.getOwner().getName(),

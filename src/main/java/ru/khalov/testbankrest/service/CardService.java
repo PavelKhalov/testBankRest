@@ -123,7 +123,7 @@ public class CardService {
             throw new CardOwnershipException("It's not your card");
         }
 
-        card.setStatus(CardStatus.BLOCKED);
+        card.setStatus(CardStatus.BLOCK_REQUEST);
         return "request for blocking card send successfully";
     }
 
