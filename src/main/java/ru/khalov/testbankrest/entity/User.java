@@ -11,9 +11,7 @@ import ru.khalov.testbankrest.util.Role;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -46,7 +44,6 @@ public class User implements UserDetails {
 
     private boolean enabled = true;
 
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 10)
     private Role role;

@@ -14,8 +14,6 @@ import ru.khalov.testbankrest.exception.UserNotFoundException;
 import ru.khalov.testbankrest.repository.UserRepository;
 import ru.khalov.testbankrest.service.mapper.UserMapper;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j

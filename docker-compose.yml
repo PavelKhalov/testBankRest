@@ -1,0 +1,30 @@
+services:
+  bankDb:
+    image: postgres:latest
+    container_name: testBankRest
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: bankTest
+    ports:
+      - "5433:5432"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: application
+    depends_on:
+      - bankDb
+    environment:
+      DB_HOST: localhost
+      DB_PORT: 5433
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      CARD_ENCRYPTION_KEY: ${CARD_ENCRYPTION_KEY}
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"

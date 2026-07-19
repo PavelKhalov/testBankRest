@@ -1,3 +1,11 @@
 spring:
   application:
     name: testBankRest
+  datasource:
+    password: postgres
+    url:
+    username: postgres
+    driver-class-name: org.postgresql.Driver
+
+jwt:
+  secretKey: ${JWT_SECRET}
